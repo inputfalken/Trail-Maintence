@@ -30,11 +30,14 @@ namespace PrimesCow {
 
             var fields = 200;
             var weeks = 6000;
-            var history = new HashSet<Tuple<int, int, int>>();
+            var history = new HashSet<int[]>();
             var lastRes = 0;
             for (var i = 0; i < weeks; i++) {
-                history.Add(new Tuple<int, int, int>(Random.Next(1, fields + 1), Random.Next(1, fields + 1),
-                    Random.Next(1, 100)));
+                history.Add(new[] {
+                    Random.Next(1, fields + 1),
+                    Random.Next(1, fields + 1),
+                    Random.Next(1, 100)
+                });
 
                 var res = Prims(fields, history);
                 if (res > 0 && lastRes != res) {
@@ -57,24 +60,24 @@ namespace PrimesCow {
 //            Console.WriteLine("Finished");
         }
 
-        public static int Prims(int fields, HashSet<Tuple<int, int, int>> history) {
+        public static int Prims(int fields, HashSet<int[]> history) {
             var length = 0;
             var visitedNodes = new HashSet<int> {1};
-            var historyQueue = new HashSet<Tuple<int, int, int>>(history);
+            var historyQueue = new HashSet<int[]>(history);
             for (var i = 1; i < fields; i++) {
                 var connectedFields = historyQueue
-                    .Where(t => visitedNodes.Contains(t.Item1) ^ visitedNodes.Contains(t.Item2));
+                    .Where(t => visitedNodes.Contains(t[0]) ^ visitedNodes.Contains(t[1]));
                 if (!connectedFields.Any()) {
                     break;
                 }
                 var closestConnectedField = connectedFields
-                    .Aggregate((minWeight, item) => item.Item3 < minWeight.Item3 ? item : minWeight);
+                    .Aggregate((minWeight, item) => item[2] < minWeight[2] ? item : minWeight);
                 historyQueue.Remove(closestConnectedField);
-                visitedNodes.Add(visitedNodes.Contains(closestConnectedField.Item1)
-                    ? closestConnectedField.Item2
-                    : closestConnectedField.Item1
+                visitedNodes.Add(visitedNodes.Contains(closestConnectedField[0])
+                    ? closestConnectedField[1]
+                    : closestConnectedField[0]
                 );
-                length += closestConnectedField.Item3;
+                length += closestConnectedField[2];
             }
             return visitedNodes.Count == fields ? length : -1;
         }
