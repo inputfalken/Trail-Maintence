@@ -1,42 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace PrimesCow {
     internal class Program {
-        private static readonly List<Tuple<int, int, int>> Inputs = new List<Tuple<int, int, int>> {
-            new Tuple<int, int, int>(1, 2, 10),
-            new Tuple<int, int, int>(1, 3, 8),
-            new Tuple<int, int, int>(3, 2, 3),
-            new Tuple<int, int, int>(1, 4, 3),
-            new Tuple<int, int, int>(1, 3, 6),
-            new Tuple<int, int, int>(2, 1, 2)
-        };
-
-        private static Random Random = new Random();
-
         public static void Main(string[] args) {
-//            var input = Console.ReadLine().Split(' ').Select(int.Parse).ToArray();
-//            var fields = input[0];
-//            var weeks = input[1];
-//            var history = new List<Tuple<int, int, int>>();
-//
-//            for (var i = 0; i < weeks; i++) {
-//                input = Console.ReadLine().Split(' ').Select(int.Parse).ToArray();
-//                history.Add(new Tuple<int, int, int>(input[0], input[1], input[2]));
-//                Console.WriteLine(Prims(fields, history));
-//            }
+            RandomInput();
+            Console.WriteLine("Finished");
+        }
 
-            var fields = 200;
-            var weeks = 6000;
+        private static void UserInput() {
+            var input = Console.ReadLine()
+                .Split(' ')
+                .Select(int.Parse)
+                .ToArray();
+            var fields = input[0];
+            var weeks = input[1];
+            var history = new HashSet<int[]>();
+
+            for (var i = 0; i < weeks; i++) {
+                input = Console.ReadLine()
+                    .Split(' ')
+                    .Select(int.Parse)
+                    .ToArray();
+                history.Add(new[] {input[0], input[1], input[2]});
+                Console.WriteLine(Prims(fields, history));
+            }
+        }
+
+        private static void AssignmentExampleInput() {
+            var inputs = new List<int[]> {
+                new[] {1, 2, 10},
+                new[] {1, 3, 8},
+                new[] {3, 2, 3},
+                new[] {1, 4, 3},
+                new[] {1, 3, 6},
+                new[] {2, 1, 2}
+            };
+            const int fields = 4;
+            var weeks = inputs.Count;
+            var history = new HashSet<int[]>();
+
+            for (var i = 0; i < weeks; i++) {
+                history.Add(inputs[i]);
+
+                var res = Prims(fields, history);
+                Console.WriteLine($"{i}: {res}");
+            }
+        }
+
+
+        private static void RandomInput() {
+            var random = new Random();
+            const int fields = 200;
+            const int weeks = 6000;
             var history = new HashSet<int[]>();
             var lastRes = 0;
             for (var i = 0; i < weeks; i++) {
                 history.Add(new[] {
-                    Random.Next(1, fields + 1),
-                    Random.Next(1, fields + 1),
-                    Random.Next(1, 100)
+                    random.Next(1, fields + 1),
+                    random.Next(1, fields + 1),
+                    random.Next(1, 100)
                 });
 
                 var res = Prims(fields, history);
@@ -45,19 +69,6 @@ namespace PrimesCow {
                 }
                 lastRes = res;
             }
-            Console.WriteLine("Finished");
-
-//            var fields = 4;
-//            var weeks = Inputs.Count;
-//            var history = new HashSet<Tuple<int, int, int>>();
-//
-//            for (var i = 0; i < weeks; i++) {
-//                history.Add(Inputs[i]);
-//
-//                var res = Prims(fields, history);
-//                Console.WriteLine($"{i}: {res}");
-//            }
-//            Console.WriteLine("Finished");
         }
 
         public static int Prims(int fields, HashSet<int[]> history) {
@@ -73,9 +84,10 @@ namespace PrimesCow {
                 var closestConnectedField = connectedFields
                     .Aggregate((minWeight, item) => item[2] < minWeight[2] ? item : minWeight);
                 historyQueue.Remove(closestConnectedField);
-                visitedNodes.Add(visitedNodes.Contains(closestConnectedField[0])
-                    ? closestConnectedField[1]
-                    : closestConnectedField[0]
+                visitedNodes.Add(
+                    visitedNodes.Contains(closestConnectedField[0])
+                        ? closestConnectedField[1]
+                        : closestConnectedField[0]
                 );
                 length += closestConnectedField[2];
             }
