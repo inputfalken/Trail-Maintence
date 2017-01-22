@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace PrimesCow {
-    internal static class Algorithm {
+    public static class Algorithm {
         public static int Prims(int fields, HashSet<int[]> history) {
             var length = 0;
             var visitedNodes = new HashSet<int> {1};
